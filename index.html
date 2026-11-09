@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sfida Corto</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8b923">
+<style>
+  body{margin:0;min-height:100vh;background:#111;color:#f5f5f5;font-family:sans-serif;padding:24px;box-sizing:border-box}
+  h1{font-size:20px;letter-spacing:3px;color:#e8b923}
+  .r{margin:14px 0}
+  .r small{display:block;color:#888;font-size:12px;letter-spacing:2px}
+  .r span{font-size:26px}
+  .b{display:flex;gap:12px;margin-top:26px}
+  button{flex:1;padding:18px;font-size:18px;border:0;border-radius:12px;background:#e8b923;color:#111;font-weight:bold}
+  button.s{background:#333;color:#f5f5f5}
+  h2{font-size:14px;letter-spacing:3px;color:#888;margin-top:40px}
+  .h{border-top:1px solid #333;padding:12px 0;font-size:15px;line-height:1.4}
+  .h small{color:#888}
+  .c{background:none;color:#888;font-size:14px;padding:10px;margin-top:10px;width:100%}
+  select,input{width:100%;box-sizing:border-box;padding:14px;font-size:16px;border-radius:10px;border:0;background:#222;color:#f5f5f5;margin-top:10px}
+  .add{display:flex;gap:8px}
+  .add button{flex:0 0 60px;margin-top:10px;padding:0}
+  .o{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #333;padding:10px 0}
+  .o button{flex:0 0 auto;background:none;color:#888;padding:6px 12px;font-size:18px}
+  .top{display:flex;justify-content:space-between;align-items:center}
+  .m{flex:0 0 auto;width:52px;padding:8px;font-size:24px;background:#333;color:#f5f5f5}
+  .ov{position:fixed;top:0;left:0;right:0;bottom:0;background:#111;overflow:auto;padding:24px;box-sizing:border-box;z-index:10}
+  .oh{display:flex;align-items:center;gap:14px}
+  .oh h2{margin:0}
+  @keyframes entra{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+  .r.in{animation:entra .5s cubic-bezier(.2,.8,.2,1) both}
+  .r{cursor:pointer}
+  button{transition:transform .15s ease,filter .15s ease}
+  button:active{transform:scale(.94);filter:brightness(1.15)}
+  .ov{display:block !important;visibility:hidden;opacity:0;transform:translateY(40px);transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .3s ease,visibility 0s .4s}
+  .ov.on{visibility:visible;opacity:1;transform:none;transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .3s ease}
+  body{background:radial-gradient(circle at 20% 0%,#2a2210 0%,#111 55%) fixed}
+  h1{text-shadow:0 0 18px rgba(232,185,35,.45)}
+  #rows .r{background:#1b1b1b;border:1px solid #2c2c2c;border-left:4px solid #e8b923;border-radius:14px;padding:12px 16px;margin:12px 0;transition:transform .15s}
+  #rows .r:active{transform:scale(.98)}
+  #rows .r:nth-child(5n+2){border-left-color:#ff6b6b}
+  #rows .r:nth-child(5n+3){border-left-color:#4ecdc4}
+  #rows .r:nth-child(5n+4){border-left-color:#a78bfa}
+  #rows .r:nth-child(5n+5){border-left-color:#60a5fa}
+  .b button:first-child{background:linear-gradient(135deg,#f3c93a,#e8932a);box-shadow:0 6px 18px rgba(232,185,35,.25)}
+  .h{animation:entra .4s ease both}
+  /*v21*/
+  #rows .r{position:relative;padding-right:60px}
+  .lk{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-style:normal;font-size:22px;opacity:.35;transition:opacity .2s}
+  #rows .r.locked{border-color:#e8b923;box-shadow:inset 0 0 0 1px #e8b923,0 0 22px rgba(232,185,35,.25)}
+  .r.locked .lk{opacity:1;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+  @keyframes pop{0%{transform:translateY(-50%) scale(.3) rotate(-30deg)}100%{transform:translateY(-50%) scale(1) rotate(0)}}
+  .ov{opacity:1;transform:none;clip-path:circle(0 at calc(100% - 50px) 50px);transition:clip-path .6s cubic-bezier(.7,0,.2,1),visibility 0s .6s}
+  .ov.on{opacity:1;transform:none;visibility:visible;clip-path:circle(160% at calc(100% - 50px) 50px);transition:clip-path .75s cubic-bezier(.7,0,.2,1)}
+  .ov>*{opacity:0;transform:translateY(24px);transition:opacity .2s ease,transform .2s ease}
+  .ov.on>*{opacity:1;transform:none;transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+  .ov.on>*:nth-child(1){transition-delay:.3s}
+  .ov.on>*:nth-child(2){transition-delay:.38s}
+  .ov.on>*:nth-child(3){transition-delay:.46s}
+  .ov.on>*:nth-child(4){transition-delay:.54s}
+  .ov.on>*:nth-child(5){transition-delay:.62s}
+  .ov.on>*:nth-child(6){transition-delay:.7s}
+  .ov.on>*:nth-child(7){transition-delay:.78s}
+  /*v26*/
+  #ciak{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+  #ciak.on{opacity:1;pointer-events:auto}
+  .cb{width:230px;height:170px;background:#1b1b1b;border:4px solid #f5f5f5;border-radius:8px;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;box-sizing:border-box;font-weight:bold;letter-spacing:4px;color:#e8b923}
+  .cs{position:absolute;left:-4px;right:-4px;top:-48px;height:36px;background:repeating-linear-gradient(115deg,#f5f5f5 0 22px,#111 22px 44px);border:4px solid #f5f5f5;border-radius:6px;transform-origin:left bottom;transform:rotate(-30deg)}
+  #ciak.on .cs{animation:batti .4s ease-in .3s forwards}
+  @keyframes batti{from{transform:rotate(-30deg)}to{transform:rotate(0)}}
+  /*v27*/
+  #premessa{margin:18px 0 4px;padding:14px 16px;border-radius:14px;background:rgba(232,185,35,.08);border:1px dashed #e8b923;color:#f0e2b0;font-size:16px;line-height:1.5;font-style:italic}
+  #premessa.in{animation:entra .6s .45s cubic-bezier(.2,.8,.2,1) both}
+  /*v28*/
+  .dif{display:flex;gap:8px;margin-top:22px}
+  .dif button{padding:10px 4px;font-size:14px;background:#222;color:#aaa;border:1px solid #333;border-radius:20px;font-weight:normal}
+  .dif button.sel{background:#e8b923;color:#111;border-color:#e8b923;font-weight:bold}
+  /*v29*/
+  #cartaov{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;z-index:30;perspective:900px}
+  #cartaov.on{opacity:1;pointer-events:auto}
+  .carta{width:240px;padding:28px 20px;text-align:center;border-radius:20px;background:linear-gradient(135deg,#2b2111,#5a4310 50%,#2b2111);border:2px solid #f3c93a;box-shadow:0 0 40px rgba(243,201,58,.5);color:#fff3c4;transform:rotateY(90deg) scale(.7)}
+  #cartaov.on .carta{animation:gira .9s cubic-bezier(.2,.9,.3,1.2) forwards}
+  @keyframes gira{to{transform:rotateY(0) scale(1)}}
+  .carta small{letter-spacing:3px;color:#f3c93a}
+  .carta b{display:block;font-size:44px;margin:10px 0}
+  .carta span{font-size:20px;line-height:1.3}
+  .carta em{display:block;margin-top:16px;font-size:12px;color:#c9b27a;font-style:normal}
+  /*v32*/
+  .sch{background:#1b1b1b;border:1px solid #2c2c2c;border-radius:14px;padding:12px 14px;margin:10px 0;animation:none}
+  .sch .sh{display:flex;justify-content:space-between;align-items:center}
+  .sch .x{flex:0 0 auto;background:none;color:#666;padding:0 6px;font-size:16px}
+  .sf{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+  .st{flex:0 0 auto;padding:8px 14px;font-size:14px;border-radius:20px;background:#333;color:#f5f5f5}
+  .s1 .st{background:#2f5d8a}
+  .s2 .st{background:#7a4fb5}
+  .s3 .st{background:#2e8b57}
+  .sf input{width:auto;flex:1;margin:0;padding:8px;font-size:14px}
+  .late{color:#ff6b6b !important}
+  /*v33*/
+  .stat{display:flex;gap:10px;margin:14px 0}
+  .stat div{flex:1;background:#1b1b1b;border:1px solid #2c2c2c;border-radius:14px;padding:12px 6px;text-align:center}
+  .stat b{display:block;font-size:26px;color:#e8b923}
+  .stat small{color:#888;font-size:11px;letter-spacing:1px}
+  .fire b{animation:pulsa 1.8s ease-in-out infinite}
+  @keyframes pulsa{50%{transform:scale(1.12)}}
+  /*v34*/
+  .b .sh2{flex:0 0 64px}
+  #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,40px);background:#e8b923;color:#111;padding:12px 18px;border-radius:24px;font-weight:bold;opacity:0;transition:all .4s cubic-bezier(.2,.8,.2,1);z-index:40;pointer-events:none;white-space:nowrap}
+  #toast.on{opacity:1;transform:translate(-50%,0)}
+  /*v38*/
+  #nomesfida{margin:8px 0 0;color:#e8b923;font-size:15px;letter-spacing:1px}
+  #nomesfida.in{animation:scendi .5s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes scendi{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+  /*v39*/
+  .pg{display:none}
+  .pg.on{display:block;animation:pagina .4s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes pagina{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  body{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px)) !important}
+  #nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(17,17,17,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid #2c2c2c;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:15}
+  #nav button{flex:1;background:none;color:#777;padding:6px 0;border-radius:12px;font-weight:normal;display:flex;flex-direction:column;align-items:center;gap:2px}
+  #nav button i{font-style:normal;font-size:22px;transition:transform .3s cubic-bezier(.2,1.6,.4,1)}
+  #nav button span{font-size:11px}
+  #nav button.sel{color:#e8b923}
+  #nav button.sel i{transform:translateY(-3px) scale(1.15)}
+  .top .m,.oh .m{display:none}
+  #toast{bottom:100px}
+  /*v40*/
+  .tabs{display:flex;gap:8px;margin:14px 0}
+  .tabs button{padding:10px 4px;font-size:14px;background:#222;color:#aaa;border:1px solid #333;border-radius:20px;font-weight:normal}
+  .tabs button.sel{background:#e8b923;color:#111;border-color:#e8b923;font-weight:bold}
+  .vuoto{color:#777;text-align:center;padding:36px 10px;font-size:15px}
+  .sch .sh span{display:flex;gap:2px}
+  /*v41*/
+  :root{--ac:#e8b923;--bg:#0f0f10;--card:#1a1a1c;--line:#2a2a2d;--mu:#8a8a90}
+  body{font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;background:radial-gradient(120% 60% at 50% -10%,#2a2310 0%,var(--bg) 60%) fixed;padding:20px 18px}
+  h1{font-size:17px;letter-spacing:4px;margin:6px 0 16px;text-shadow:none}
+  #rows .r{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ac);border-radius:18px;padding:14px 56px 14px 16px;margin:10px 0}
+  #rows .r.locked{border-color:var(--ac)}
+  .r small{font-size:11px;letter-spacing:2.5px;color:var(--mu)}
+  .r span{display:block;font-size:23px;line-height:1.25;margin-top:5px}
+  #premessa{border-radius:18px;font-size:15px}
+  .dif{margin-top:18px}
+  .b{gap:10px;margin-top:18px}
+  .b button:first-child{padding:20px;font-size:19px;border-radius:18px}
+  .b .s{background:var(--card);border:1px solid var(--line);color:#f4f4f5;border-radius:18px}
+  button.c{color:var(--mu);font-size:13px;margin-top:6px}
+  h2{font-size:12px;letter-spacing:3px;color:var(--mu);margin:24px 0 10px}
+  .sch,.stat div{border-radius:18px}
+  select,input{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  /*v42*/
+  @property --glow{syntax:"<color>";inherits:true;initial-value:#2e2610}
+  @property --ac{syntax:"<color>";inherits:true;initial-value:#e8b923}
+  @property --ac2{syntax:"<color>";inherits:true;initial-value:#f3c93a}
+  @property --acs{syntax:"<color>";inherits:true;initial-value:rgba(232,185,35,.08)}
+  @property --tint{syntax:"<color>";inherits:true;initial-value:#f0e2b0}
+  body{transition:--glow .7s ease,--ac .7s ease,--ac2 .7s ease,--acs .7s ease,--tint .7s ease;background:radial-gradient(120% 60% at 50% -10%,var(--glow) 0%,#0f0f10 60%) fixed}
+  body[data-pg="sfida"]{--ac:#e8b923;--ac2:#f3c93a;--glow:#2e2610;--acs:rgba(232,185,35,.08);--tint:#f0e2b0}
+  body[data-pg="liste"]{--ac:#4aa8ff;--ac2:#7cc0ff;--glow:#10243a;--acs:rgba(74,168,255,.09);--tint:#cfe6ff}
+  body[data-pg="corti"]{--ac:#ff5a5f;--ac2:#ff8a8e;--glow:#3a1214;--acs:rgba(255,90,95,.09);--tint:#ffd0d2}
+  body[data-pg="stats"]{--ac:#a78bfa;--ac2:#c4b0ff;--glow:#241942;--acs:rgba(167,139,250,.09);--tint:#e2d9ff}
+  h1,#nomesfida,.stat b{color:var(--ac)}
+  button{background:var(--ac)}
+  .b button:first-child{background:linear-gradient(135deg,var(--ac2),var(--ac));box-shadow:0 6px 18px var(--acs)}
+  .dif button.sel,.tabs button.sel{background:var(--ac);border-color:var(--ac)}
+  #premessa{background:var(--acs);border-color:var(--ac);color:var(--tint)}
+  #rows .r:nth-child(n){border-left-color:var(--ac)}
+  #rows .r.locked{box-shadow:inset 0 0 0 1px var(--ac),0 0 22px var(--acs)}
+  #nav button.sel{color:var(--ac)}
+  #toast{background:var(--ac)}
+  /*v44*/
+  .dati{display:flex;gap:10px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="top"><h1>🎬 SFIDA CORTO</h1><button class="m" onclick="menu()">☰</button></div>
+<div id="nomesfida"></div>
+<div id="rows"></div>
+<div id="premessa"></div>
+<div class="dif" id="dif"><button onclick="setDiff('facile')">😌 Facile</button><button onclick="setDiff('medio')">🎯 Medio</button><button onclick="setDiff('folle')">🔥 Folle</button></div>
+<div class="b">
+  <button onclick="rilancia()">🎬 CIAK</button>
+  <button class="s" onclick="salva()">SALVA</button>
+  <button class="s sh2" onclick="condividi()">📤</button>
+</div>
+<button class="c" onclick="chiediCodice()">📥 Ho un codice sfida</button>
+<div id="pannello" class="ov" style="display:none"><div class="oh"><button class="m" onclick="menu()">←</button><h2>MODIFICA LISTE</h2></div>
+<select id="cat" onchange="mostraOpz()"></select>
+<button class="c" onclick="eliminaCat()">Elimina questa categoria</button>
+<div class="add"><input id="nuovacat" placeholder="Nuova categoria (es. Personaggio)"><button onclick="creaCat()">+</button></div>
+<div class="add"><input id="nuova" placeholder="Nuova opzione"><button onclick="aggiungi()">+</button></div>
+<div id="opz"></div>
+<h2>I MIEI DATI</h2>
+<div class="dati"><button class="s" onclick="esportaDati()">📤 Esporta</button><button class="s" onclick="importaDati()">📥 Importa</button></div></div>
+<div id="stat" class="stat"></div>
+<h2>I MIEI CORTI</h2>
+<div class="tabs" id="tabsC"><button onclick="filtraC('tutti')">Tutti</button><button onclick="filtraC('pref')">⭐ Preferiti</button></div>
+<div id="h"></div>
+<button class="c" onclick="svuota()">Cancella cronologia</button>
+<div id="ciak"><div class="cb"><div class="cs"></div>SFIDA CORTO</div></div>
+<div id="cartaov" onclick="this.classList.remove('on')"><div class="carta"><small>CARTA RARA</small><b id="ci"></b><span id="ct"></span><em>tocca per chiudere</em></div></div>
+<div id="toast"></div>
+<script>
+const DEF={
+ g:["thriller","commedia","horror","drammatico","fantascienza","romantico","giallo"],
+ l:["un autolavaggio","un ascensore","un parcheggio di notte","una lavanderia a gettoni","un bar all'alba","una spiaggia d'inverno","un autobus vuoto"],
+ o:["una chiave","un ombrello rotto","una busta chiusa","un telefono che squilla","uno specchio","una bicicletta"],
+ v:["solo piani fissi","senza dialoghi","un unico piano sequenza","solo inquadrature dal basso","massimo 2 minuti","solo luce naturale"]
+};
+function caricaD(){try{const s=JSON.parse(localStorage.getItem("liste"));if(s)return s}catch(e){}return JSON.parse(JSON.stringify(DEF))}
+let D=caricaD();
+function salvaD(){try{localStorage.setItem("liste",JSON.stringify(D))}catch(e){}}
+let cur={};
+function gen(){const n={};for(const k in D){if(!D[k].length)continue;if(bloc[k]&&cur[k]){n[k]=cur[k]}else{n[k]=pesca(k)}}cur=n;nomeSfida("");applicaDiff();carta();disegna();anima()}
+let bloc={};
+function anima(){const pe=document.getElementById("premessa");if(pe){pe.classList.remove("in");void pe.offsetWidth;pe.classList.add("in")}const ks=Object.keys(cur);document.querySelectorAll("#rows .r").forEach(function(e,i){if(!bloc[ks[i]]){e.style.animationDelay=(i*90)+"ms";e.classList.add("in")}})}
+let girando=false;
+function spin(){
+  if(girando)return;girando=true;
+  const rows=document.querySelectorAll("#rows .r span");
+  const cks=Object.keys(cur);
+  let n=0;
+  const iv=setInterval(function(){
+    cks.forEach(function(k,i){if(!bloc[k]&&rows[i]&&D[k]&&D[k].length){rows[i].textContent=D[k][Math.floor(Math.random()*D[k].length)]}});
+    n++;
+    if(n>=10){clearInterval(iv);girando=false;gen();if(navigator.vibrate)navigator.vibrate(20)}
+  },60);
+}
+function rilancia(){
+  if(girando)return;
+  const c=document.getElementById("ciak");
+  c.classList.add("on");
+  setTimeout(function(){if(navigator.vibrate)navigator.vibrate([20,30,40])},650);
+  setTimeout(function(){c.classList.remove("on");spin()},1100);
+}
+function premessa(){
+  const e=document.getElementById("premessa");if(!e)return;
+  const c=cur,p=[];
+  if(c.g)p.push("Un corto "+c.g+".");
+  if(c.l)p.push("Siamo in "+c.l+".");
+  if(c.o)p.push("In scena c'è "+c.o+".");
+  if(c.v)p.push("La regola: "+c.v+".");
+  Object.keys(c).forEach(function(k){if(["g","l","o","v"].indexOf(k)<0)p.push((NOMI[k]||k)+": "+c[k]+".")});
+  e.textContent=p.join(" ");
+}
+let diff="medio";
+try{diff=localStorage.getItem("diff")||"medio"}catch(e){}
+function setDiff(d){diff=d;try{localStorage.setItem("diff",d)}catch(e){}segnaDiff()}
+function segnaDiff(){const b=document.querySelectorAll("#dif button");["facile","medio","folle"].forEach(function(x,i){if(b[i])b[i].classList.toggle("sel",x==diff)})}
+function applicaDiff(){
+  NOMI.v2="Vincolo extra";
+  if(diff=="facile"){delete cur.v}
+  if(diff=="folle"&&D.v&&D.v.length>1){let x;do{x=D.v[Math.floor(Math.random()*D.v.length)]}while(x==cur.v);cur.v2=x}
+}
+segnaDiff();
+function carta(){
+  NOMI.carta="Carta rara";
+  delete cur.carta;delete bloc.carta;
+  if(Math.random()>=0.15)return;
+  const C=[["🃏","JOLLY","Cambia a tua scelta uno degli elementi"],["⏱️","TEMPO DIMEZZATO","Hai metà del tempo"],["🎞️","PIANO UNICO","Tutto in un solo piano sequenza"],["🔇","SILENZIO","Niente audio né musica"],["🌑","POCA LUCE","Una sola fonte di luce"],["🔁","SCAMBIO","Scambia genere e luogo con un compagno"]];
+  const c=C[Math.floor(Math.random()*C.length)];
+  cur.carta=c[1]+": "+c[2];
+  setTimeout(function(){
+    document.getElementById("ci").textContent=c[0];
+    document.getElementById("ct").textContent=c[1]+" - "+c[2];
+    document.getElementById("cartaov").classList.add("on");
+    if(navigator.vibrate)navigator.vibrate([30,60,30,60,80]);
+  },900);
+}
+function toast(m){const e=document.getElementById("toast");e.textContent=m;e.classList.add("on");clearTimeout(window._tt);window._tt=setTimeout(function(){e.classList.remove("on")},2600)}
+function codice(nome){return btoa(unescape(encodeURIComponent(JSON.stringify({n:nome,c:cur})))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function importaCodice(o){/*v36*/if(o&&o.c&&typeof o.c=="object"){importa(o.c,o.n)}else{importa(o)}}
+function leggiCodice(c){c=c.trim().replace(/-/g,"+").replace(/_/g,"/");while(c.length%4)c+="=";return JSON.parse(decodeURIComponent(escape(atob(c))))}
+function condividi(){
+  let n=0;try{n=+localStorage.getItem("nshare")||0}catch(e){}
+  const def="Sfida Corto "+(n+1);
+  let nome=prompt("Come vuoi chiamare questa sfida? (es. Sfida Corto 4, oppure una data)",def);
+  if(nome===null)return;
+  nome=nome.replace(/[<>&]/g," ").trim().slice(0,40)||def;
+  if(nome==def){try{localStorage.setItem("nshare",String(n+1))}catch(e){}}
+  const c=codice(nome);nomeSfida(nome);
+  const url=location.href.split("#")[0]+"#s="+c;
+  const testo="🎬 "+nome+"\n"+Object.keys(cur).map(function(k){return (NOMI[k]||k)+": "+cur[k]}).join("\n")+"\n\nProva anche tu: "+url+"\nCodice: "+c;
+  if(navigator.share){navigator.share({text:testo}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(testo).then(function(){toast("Sfida copiata!")})}
+  else{prompt("Copia la sfida:",testo)}
+}
+function importa(o,nome){
+  if(!o||typeof o!="object")return;
+  const n={};
+  Object.keys(o).slice(0,12).forEach(function(k){
+    const kk=String(k).replace(/[<>&"'\\]/g,"").slice(0,30);
+    if(kk)n[kk]=String(o[k]).replace(/[<>&]/g," ").slice(0,120);
+  });
+  if(!Object.keys(n).length)return;
+  NOMI.v2="Vincolo extra";NOMI.carta="Carta rara";
+  cur=n;bloc={};disegna();anima();nomeSfida(nome||"Sfida ricevuta");
+  if(navigator.vibrate)navigator.vibrate([20,40,20]);
+  toast(nome?"🎬 "+String(nome).replace(/[<>&]/g," ").slice(0,40)+" - ciak, si gira":"🎬 Sfida ricevuta! Ciak, si gira");
+}
+function chiediCodice(){
+  const c=prompt("Incolla qui il codice della sfida (o il messaggio ricevuto):");
+  if(!c)return;
+  try{
+    let x=c.trim();
+    let i=x.indexOf("Codice:");if(i>=0)x=x.slice(i+7).trim();
+    i=x.indexOf("#s=");if(i>=0)x=x.slice(i+3);
+    x=x.split(/\s/)[0];
+    importaCodice(leggiCodice(x));
+  }catch(e){toast("Codice non valido")}
+}
+function daLink(){
+  const h=location.hash;
+  if(h.indexOf("#s=")!=0)return;
+  try{importaCodice(leggiCodice(h.slice(3)));history.replaceState(null,"",location.pathname)}catch(e){}
+}
+/*v37*/
+const BONUS={
+g:["western","noir","musical","documentario finto","fantasy","storia d'amore","spionaggio","film di guerra","commedia nera","dramma familiare","avventura","post-apocalittico","cappa e spada","film muto","road movie","film di rapina","film sportivo","thriller psicologico","horror comico","fiaba moderna","distopia","commedia romantica","dramma storico","giallo all'italiana","poliziesco","gangster movie","slasher","found footage","body horror","folk horror","cyberpunk","surreale","videoclip","favola nera","spaghetti western","teen movie","dramma da camera","commedia degli equivoci","film d'azione","film di fantasmi","viaggio nel tempo","romanzo di formazione","satira sociale","commedia grottesca","dramma psicologico","film di mostri","film catastrofico","commedia di costume","melodramma","film di fantascienza anni 80"],
+l:["un cimitero","una stazione dei treni","un mercato rionale","una biblioteca","un cinema vuoto","una scuola vuota","un ospedale","una sala d'attesa","una cabina telefonica","un negozio di dischi","una pizzeria","un supermercato","una palestra","una piscina comunale","un campo da calcio","un condominio","una soffitta","una cantina","una terrazza","un balcone","un ponte","un sottopasso","una galleria","un tram","una metro","un treno regionale","un traghetto","un porto","un faro","un lido chiuso","una scogliera","un bosco","un campo di grano","una fattoria","un casolare abbandonato","una fabbrica dismessa","un magazzino","un cantiere","un parcheggio multipiano","una stazione di servizio","un autogrill","una casa al mare","una roulotte","una tenda in campeggio","un hotel a ore","una hall d'albergo","un ristorante vuoto","una cucina","un bagno pubblico","un barbiere","un salone di parrucchiere","una sartoria","un'officina","un'edicola","una chiesa","una sagrestia","un teatro","un camerino","un set cinematografico","un museo","un'aula universitaria","un ufficio","un appartamento in affitto","una casa di riposo","una sala giochi","un luna park","un circo","una funivia","un vicolo cieco","una piazza deserta","un tetto"],
+o:["un orologio fermo","una lettera mai spedita","un mazzo di carte","una valigia","una torcia","una fotografia strappata","un cappello","un paio di occhiali","un registratore a cassette","una videocassetta","una polaroid","una macchina da scrivere","un telefono a disco","un walkie-talkie","un mazzo di chiavi","una scatola di latta","una mappa","una bussola","un pallone","un anello","una collana","un orologio da polso","una sveglia","una radio","un ventilatore","una lampada","una candela","un cappotto","un guanto spaiato","una scarpa sola","un biglietto del treno","un biglietto della lotteria","un mazzo di fiori","una torta","una bottiglia di vino","un thermos","un panino","una moneta","un diario","un libro senza copertina","un quaderno","una penna rossa","una cartolina","un disco in vinile","delle cuffie","una chitarra scordata","un cavalletto","una macchina fotografica usa e getta","un proiettore","una pellicola","un ciak","un cartello stradale","un lucchetto","una cassetta della posta","un citofono","un secchio","una scala a pioli","una corda","una coperta","un peluche","una maschera","un palloncino","un sacco della spazzatura","un televisore acceso","un telecomando","un frigorifero","una teiera","una pianta in vaso","un acquario"],
+v:["girato in bianco e nero","solo campi lunghi","solo primi piani","solo dettagli","tutto con camera a mano","solo treppiede, mai un movimento","inquadrature solo dall'alto","tutto in soggettiva","il protagonista non mostra mai il viso","il protagonista non parla mai","solo una voce fuori campo","nessuna voce umana, solo rumori","solo dialoghi sussurrati","dialoghi solo al telefono","un solo attore","due soli attori","senza attori: solo oggetti","tutto girato in tre metri quadrati","tutto girato da una finestra","girato solo con il telefono","solo tagli sul movimento","solo dissolvenze","un jump cut a ogni battuta","si svolge al contrario","si svolge in tempo reale","un flashback obbligatorio","finale a sorpresa","finale aperto","finale senza parole","inizia con un primo piano di un oggetto","una sola fonte di luce","solo luce artificiale","sempre in controluce","luce di una torcia","un solo colore dominante","nessun colore caldo","il titolo appare solo alla fine","un solo suono ripetuto","silenzio totale per metà del corto","uno specchio o un riflesso in ogni scena","solo inquadrature simmetriche","un oggetto rosso sempre in quadro","un personaggio che non si vede mai","un telefono che squilla senza risposta","inizia e finisce sulla stessa inquadratura","tutto girato in una sola stanza","musica solo dentro la scena","una sola battuta di dialogo","un orologio sempre visibile","pioggia o acqua in almeno una scena"]
+};
+const MOD_L=["di notte","all'alba","sotto la pioggia","durante un blackout","a Ferragosto","con la nebbia","il giorno dopo una festa","alle 4 di mattina","in piena estate","durante uno sciopero","mentre fuori nevica","poco prima della chiusura","durante un temporale","la vigilia di Natale"];
+const MOD_O=["che non è tuo","che non dovresti avere","con un biglietto attaccato","con le tue iniziali","che qualcuno rivuole indietro","che vale più di quanto sembra","che non puoi lasciare","ancora nella confezione"];
+function scegli(a){return a[Math.floor(Math.random()*a.length)]}
+const VPAR=[
+ function(){return "massimo "+scegli([3,4,5,7,10,12])+" inquadrature"},
+ function(){return "durata esatta: "+scegli([1,2,3,4,5])+" minuti"},
+ function(){return "montaggio con soli "+scegli([4,6,8,10])+" tagli"},
+ function(){return "al massimo "+scegli([2,3,4])+" personaggi in scena"},
+ function(){return "massimo "+scegli([1,2,3,5,8])+" battute di dialogo"},
+ function(){return "girato in meno di "+scegli([10,20,30,60])+" minuti"}
+];
+function pesca(k){
+  const L=D[k];
+  const x=scegli(L);
+  const r=Math.random();
+  if(k=="g"&&r<.35&&L.length>1){let y;do{y=scegli(L)}while(y==x);return x+" con venature di "+y}
+  if(k=="l"&&r<.4)return x+" "+scegli(MOD_L);
+  if(k=="o"&&r<.35)return x+" "+scegli(MOD_O);
+  if(k=="v"&&r<.3)return scegli(VPAR)();
+  return x;
+}
+function bonus(){
+  try{if(localStorage.getItem("bonus1"))return}catch(e){return}
+  let n=0;
+  for(const k in BONUS){if(!D[k])continue;BONUS[k].forEach(function(x){if(D[k].indexOf(x)<0){D[k].push(x);n++}})}
+  salvaD();
+  try{localStorage.setItem("bonus1","1")}catch(e){}
+  setTimeout(function(){toast("✨ +"+n+" opzioni aggiunte")},700);
+}
+let nomeCur="";
+function nomeSfida(n){nomeCur=n||"";const e=document.getElementById("nomesfida");if(!e)return;e.textContent=nomeCur?"📌 "+nomeCur:"";e.classList.remove("in");if(nomeCur){void e.offsetWidth;e.classList.add("in")}}
+function pagine(){
+  const q=function(s){return document.querySelector(s)};
+  const H2=Array.prototype.filter.call(document.querySelectorAll("h2"),function(e){return e.textContent.indexOf("I MIEI CORTI")==0})[0];
+  const G={
+    sfida:[q("#nomesfida"),q("#rows"),q("#premessa"),q("#dif"),q(".b"),q('button[onclick="chiediCodice()"]')],
+    corti:[H2,q("#tabsC"),q("#h"),q('button[onclick="svuota()"]')],
+    stats:[q("#stat")],
+    liste:[q("#pannello")]
+  };
+  const voci=[["sfida","🎬","Sfida"],["corti","📁","Corti"],["stats","📊","Statistiche"],["liste","⚙️","Liste"]];
+  const nav=document.createElement("nav");nav.id="nav";
+  let after=q(".top");
+  voci.forEach(function(v){
+    const s=document.createElement("section");s.className="pg";s.id="pg-"+v[0];
+    G[v[0]].forEach(function(e){if(e)s.appendChild(e)});
+    after.parentNode.insertBefore(s,after.nextSibling);after=s;
+    const b=document.createElement("button");b.id="nv-"+v[0];
+    b.innerHTML="<i>"+v[1]+"</i><span>"+v[2]+"</span>";
+    b.onclick=function(){vai(v[0])};
+    nav.appendChild(b);
+  });
+  document.body.appendChild(nav);
+  const pn=q("#pannello");if(pn){pn.className="";pn.style.display=""}
+  vai("sfida");
+}
+function vai(n){
+  document.querySelectorAll(".pg").forEach(function(e){e.classList.toggle("on",e.id=="pg-"+n)});
+  document.querySelectorAll("#nav button").forEach(function(b){b.classList.toggle("sel",b.id=="nv-"+n)});
+  window.scrollTo(0,0);document.body.setAttribute("data-pg",n);
+  if(n=="corti"){segnaTabs();mostra()}
+  if(n=="stats")stat();
+}
+let filtroC="tutti";
+function preferito(i){const s=carica();if(!s[i])return;s[i].p=!s[i].p;scriviStoria(s);mostra()}
+function filtraC(f){filtroC=f;segnaTabs();mostra()}
+function segnaTabs(){const b=document.querySelectorAll("#tabsC button");if(b.length==2){b[0].classList.toggle("sel",filtroC=="tutti");b[1].classList.toggle("sel",filtroC=="pref")}}
+const CHIAVI=["liste","storia","diff","nshare","bonus1"];
+function esportaDati(){
+  const o={};
+  CHIAVI.forEach(function(k){try{const v=localStorage.getItem(k);if(v!==null)o[k]=v}catch(e){}});
+  const c=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  const testo="SFIDACORTO-DATI:"+c;
+  if(navigator.share){navigator.share({text:testo}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(testo).then(function(){toast("Dati copiati!")})}
+  else{prompt("Copia i dati:",testo)}
+}
+function importaDati(){
+  const c=prompt("Incolla qui i dati esportati:");
+  if(!c)return;
+  try{
+    let x=c.trim();
+    const i=x.indexOf("SFIDACORTO-DATI:");
+    if(i<0){toast("Dati non validi");return}
+    x=x.slice(i+16).split(/\s/)[0].replace(/-/g,"+").replace(/_/g,"/");
+    while(x.length%4)x+="=";
+    const o=JSON.parse(decodeURIComponent(escape(atob(x))));
+    if(!confirm("Questo sostituisce liste, corti e statistiche di questa app con quelli importati. Continuare?"))return;
+    CHIAVI.forEach(function(k){if(typeof o[k]=="string"){try{localStorage.setItem(k,o[k])}catch(e){}}});
+    location.reload();
+  }catch(e){toast("Dati non validi")}
+}
+function lock(k){bloc[k]=!bloc[k];disegna()}
+function disegna(){premessa();document.getElementById("rows").innerHTML=Object.keys(cur).map(function(k){return '<div class="r'+(bloc[k]?' locked':'')+'" onclick="lock(\''+k+'\')"><small>'+(NOMI[k]||k).toUpperCase()+'</small><span>'+cur[k]+'</span><i class="lk">'+(bloc[k]?'🔒':'🔓')+'</i></div>'}).join("")}
+function carica(){try{return JSON.parse(localStorage.getItem("storia"))||[]}catch(e){return []}}
+function salva(){
+  const s=carica();
+  s.unshift({n:nomeCur,c:Object.assign({},cur),t:new Date().toLocaleDateString("it-IT")});
+  try{localStorage.setItem("storia",JSON.stringify(s.slice(0,50)))}catch(e){}
+  mostra();
+}
+const STATI=["💡 Idea","🎥 Girato","✂️ Montato","✅ Finito"];
+function scriviStoria(s){try{localStorage.setItem("storia",JSON.stringify(s))}catch(e){}}
+function mostra(){
+  document.getElementById("h").innerHTML=carica().map(function(x,i){if(filtroC=="pref"&&!x.p)return "";
+    const c=x.c||{g:x.g,l:x.l,o:x.o,v:x.v};
+    const st=x.s||0;
+    let sc="",late="";
+    if(x.d){
+      const g=Math.round((new Date(x.d+"T00:00:00")-new Date().setHours(0,0,0,0))/86400000);
+      sc=g<0?"scaduto":g==0?"oggi":g==1?"domani":"tra "+g+" giorni";
+      if(g<0&&st<3)late=" late";
+    }
+    return '<div class="h sch s'+st+'"><div class="sh"><small>'+(x.n?x.n+" · ":"")+x.t+'</small><span><button class="x" onclick="preferito('+i+')">'+(x.p?"⭐":"☆")+'</button><button class="x" onclick="elimina('+i+')">✕</button></span></div><div>'+Object.values(c).join(' · ')+'</div><div class="sf"><button class="st" onclick="cambiaStato('+i+')">'+STATI[st]+'</button><input type="date" value="'+(x.d||"")+'" onchange="setScad('+i+',this.value)"><small class="'+late+'">'+sc+'</small></div></div>';
+  }).join("")||'<div class="vuoto">'+(filtroC=="pref"?"Nessun preferito: tocca ☆ su un corto":"Ancora nessun corto salvato")+'</div>';
+stat();
+}
+function sett(d){const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return Math.round(x.getTime()/604800000)}
+function stat(){
+  const e=document.getElementById("stat");if(!e)return;
+  const s=carica();const W=new Set();let fin=0;
+  s.forEach(function(x){
+    const p=(x.t||"").split("/");
+    if(p.length==3){const d=new Date(+p[2],+p[1]-1,+p[0]);if(!isNaN(d))W.add(sett(d))}
+    if((x.s||0)==3){fin++;if(x.f){const d=new Date(x.f+"T00:00:00");if(!isNaN(d))W.add(sett(d))}}
+  });
+  const cw=sett(new Date());let k=W.has(cw)?cw:cw-1,n=0;
+  while(W.has(k)){n++;k--}
+  e.innerHTML='<div><b>'+s.length+'</b><small>SFIDE</small></div><div><b>'+fin+'</b><small>FINITI</small></div><div class="fire"><b>'+(n>0?"🔥 ":"")+n+'</b><small>SETTIMANE</small></div>';
+}
+function cambiaStato(i){const s=carica();if(!s[i])return;s[i].s=((s[i].s||0)+1)%4;if(s[i].s==3){const d=new Date();s[i].f=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}else{delete s[i].f}scriviStoria(s);mostra()}
+function setScad(i,v){const s=carica();if(!s[i])return;s[i].d=v;scriviStoria(s);mostra()}
+function elimina(i){const s=carica();s.splice(i,1);scriviStoria(s);mostra()}
+function svuota(){if(confirm("Cancellare i corti salvati? I preferiti restano.")){scriviStoria(carica().filter(function(x){return x.p}));mostra()}}
+function creaCat(){
+  const inp=document.getElementById("nuovacat");
+  const n=inp.value.replace(/[<>"']/g,"").trim();
+  if(!n)return;
+  if(D[n]){alert("Esiste già");return}
+  D[n]=[];salvaD();inp.value="";popolaCat();
+  document.getElementById("cat").value=n;mostraOpz();
+}
+const NOMI={g:"Genere",l:"Luogo",o:"Oggetto",v:"Vincolo"};
+function eliminaCat(){
+  const k=document.getElementById("cat").value;
+  if(Object.keys(D).length<=1){alert("Ne serve almeno una categoria");return}
+  if(!confirm("Eliminare la categoria "+(NOMI[k]||k)+" con tutte le sue opzioni?"))return;
+  delete D[k];delete cur[k];delete bloc[k];
+  salvaD();popolaCat();disegna();
+}
+function menu(){document.getElementById("pannello").classList.toggle("on")}
+function popolaCat(){
+  const s=document.getElementById("cat");
+  s.innerHTML=Object.keys(D).map(function(k){return '<option value="'+k+'">'+(NOMI[k]||k)+'</option>'}).join("");
+  mostraOpz();
+}
+function mostraOpz(){
+  const k=document.getElementById("cat").value;
+  document.getElementById("opz").innerHTML=(D[k]||[]).map(function(x,i){
+    return '<div class="o"><span>'+x+'</span><button onclick="togli('+i+')">✕</button></div>';
+  }).join("");
+}
+function aggiungi(){
+  const k=document.getElementById("cat").value;
+  const inp=document.getElementById("nuova");
+  const v=inp.value.trim();
+  if(!v)return;
+  D[k].push(v);salvaD();inp.value="";mostraOpz();
+}
+function togli(i){
+  const k=document.getElementById("cat").value;
+  if(D[k].length<=1){alert("Ne serve almeno una opzione");return}
+  D[k].splice(i,1);salvaD();mostraOpz();
+}
+gen();
+mostra();
+popolaCat();
+bonus();popolaCat();
+pagine();
+daLink();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
+</script>
+</body>
+</html>
