@@ -173,6 +173,25 @@
   .dati{display:flex;gap:10px;margin-top:10px}
   /*v57*/
   .giorno{width:100%;margin-top:10px;padding:14px;font-size:15px;border-radius:18px;background:var(--acs);color:var(--tint);border:1px dashed var(--ac)}
+  /*v58*/
+  body[data-pg="sett"]{--ac:#3ddc97;--ac2:#7af0bd;--glow:#0f2f24;--acs:rgba(61,220,151,.09);--tint:#d2f7e6}
+  .giorno{display:none !important}
+  .wk-head{margin:6px 0 10px}
+  .wk-date{font-size:22px;font-weight:700;margin-top:4px}
+  .wk-timer{text-align:center;background:var(--acs);border:1px solid var(--ac);border-radius:18px;padding:16px;margin:12px 0}
+  #wkTimer{display:flex;justify-content:center;gap:14px;font-size:34px;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums;margin-top:6px}
+  #wkTimer i{font-style:normal;font-size:13px;color:var(--mu);margin-left:2px}
+  #wkTimer.urg{color:#ff5a5f;animation:pulsa 1.4s ease-in-out infinite}
+  .wk-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+  .wk-card h3{margin:6px 0 10px;font-size:22px}
+  .wk-card p{margin:8px 0;line-height:1.5;color:#e6e6e8}
+  .wk-card small,.wk-timer small,.wk-v small,.wk-head small{font-size:11px;letter-spacing:2.5px;color:var(--mu)}
+  .wk-v{background:var(--acs);border:1px dashed var(--ac);border-radius:18px;padding:16px;margin:12px 0}
+  .wk-v b{display:block;font-size:20px;margin-top:6px;color:var(--tint)}
+  .wk-card input{margin-top:10px}
+  .wk-card button{width:100%;margin-top:10px;padding:14px;font-size:16px;border-radius:14px}
+  .wk-card button.s{background:var(--card);border:1px solid var(--line);color:#f4f4f5}
+  .wk-card a{display:block;margin-top:12px;color:var(--ac);text-decoration:none;font-weight:bold}
 </style>
 </head>
 <body>
@@ -326,7 +345,7 @@ o:["un orologio fermo","una lettera mai spedita","un mazzo di carte","una valigi
 v:["girato in bianco e nero","solo campi lunghi","solo primi piani","solo dettagli","tutto con camera a mano","solo treppiede, mai un movimento","inquadrature solo dall'alto","tutto in soggettiva","il protagonista non mostra mai il viso","il protagonista non parla mai","solo una voce fuori campo","nessuna voce umana, solo rumori","solo dialoghi sussurrati","dialoghi solo al telefono","un solo attore","due soli attori","senza attori: solo oggetti","tutto girato in tre metri quadrati","tutto girato da una finestra","girato solo con il telefono","solo tagli sul movimento","solo dissolvenze","un jump cut a ogni battuta","si svolge al contrario","si svolge in tempo reale","un flashback obbligatorio","finale a sorpresa","finale aperto","finale senza parole","inizia con un primo piano di un oggetto","una sola fonte di luce","solo luce artificiale","sempre in controluce","luce di una torcia","un solo colore dominante","nessun colore caldo","il titolo appare solo alla fine","un solo suono ripetuto","silenzio totale per metà del corto","uno specchio o un riflesso in ogni scena","solo inquadrature simmetriche","un oggetto rosso sempre in quadro","un personaggio che non si vede mai","un telefono che squilla senza risposta","inizia e finisce sulla stessa inquadratura","tutto girato in una sola stanza","musica solo dentro la scena","una sola battuta di dialogo","un orologio sempre visibile","pioggia o acqua in almeno una scena"]
 };
 const MOD_L=["di notte","all'alba","sotto la pioggia","durante un blackout","a Ferragosto","con la nebbia","il giorno dopo una festa","alle 4 di mattina","in piena estate","durante uno sciopero","mentre fuori nevica","poco prima della chiusura","durante un temporale","la vigilia di Natale"];
-const MOD_O=["che non è tuo","che non dovresti avere","con un biglietto attaccato","con le tue iniziali","che qualcuno rivuole indietro","che vale più di quanto sembra","che non puoi lasciare","ancora nella confezione"];
+const MOD_O=["che non ti appartiene","che non dovresti avere","con un biglietto attaccato","con le tue iniziali","che qualcuno rivuole indietro","che vale più di quanto sembra","che non puoi lasciare","ancora nella confezione"];
 function scegli(a){return a[Math.floor(Math.random()*a.length)]}
 const VPAR=[
  function(){return "massimo "+scegli([3,4,5,7,10,12])+" inquadrature"},
@@ -362,10 +381,10 @@ function pagine(){
   const G={
     sfida:[q("#nomesfida"),q("#rows"),q("#premessa"),q("#dif"),q(".b"),q('button[onclick="chiediCodice()"]'),q("#giorno")],
     corti:[H2,q("#tabsC"),q("#h"),q('button[onclick="svuota()"]')],
-    stats:[q("#stat")],
+    stats:[q("#stat")],sett:[q("#sett")],
     liste:[q("#pannello")]
   };
-  const voci=[["sfida","🎬","Sfida"],["corti","📁","Corti"],["stats","📊","Statistiche"],["liste","⚙️","Liste"]];
+  const voci=[["sfida","🎬","Sfida"],["sett","🏆","Settimana"],["corti","📁","Corti"],["stats","📊","Statistiche"],["liste","⚙️","Liste"]];
   const nav=document.createElement("nav");nav.id="nav";
   let after=q(".top");
   voci.forEach(function(v){
@@ -387,12 +406,13 @@ function vai(n){
   window.scrollTo(0,0);document.body.setAttribute("data-pg",n);
   if(n=="corti"){segnaTabs();mostra()}
   if(n=="stats")stat();
+  if(n=="sett")renderSett();
 }
 let filtroC="tutti";
 function preferito(i){const s=carica();if(!s[i])return;s[i].p=!s[i].p;scriviStoria(s);mostra()}
 function filtraC(f){filtroC=f;segnaTabs();mostra()}
 function segnaTabs(){const b=document.querySelectorAll("#tabsC button");if(b.length==2){b[0].classList.toggle("sel",filtroC=="tutti");b[1].classList.toggle("sel",filtroC=="pref")}}
-const CHIAVI=["liste","storia","diff","nshare","bonus1"];
+const CHIAVI=["liste","storia","diff","nshare","bonus1","wk","utente"];
 function esportaDati(){
   const o={};
   CHIAVI.forEach(function(k){try{const v=localStorage.getItem(k);if(v!==null)o[k]=v}catch(e){}});
@@ -436,6 +456,77 @@ function sfidaGiorno(){
   cur=n;bloc={};disegna();anima();
   nomeSfida("Sfida del giorno · "+new Date().toLocaleDateString("it-IT",{day:"numeric",month:"long"}));
   if(navigator.vibrate)navigator.vibrate(20);
+}
+const WK_P=["una barista insonne","un ex pugile","una studentessa fuori sede","un corriere in ritardo","un vecchio proiezionista","una custode troppo curiosa","un musicista senza ingaggi","una tassista a fine turno","un ragazzo che ha perso il telefono","una sarta con un segreto","un attore dimenticato","una nonna che non dorme mai","un fotografo di matrimoni","una dottoranda in crisi","un guardiano notturno","una cantante di piano bar","un pescatore senza barca","una ragazza appena licenziata","un commesso all'ultimo giorno","un elettricista che sa troppe cose"];
+const WK_C=["qualcuno sa cosa c'è dietro quell'oggetto e lo rivuole indietro","il tempo stringe e tutto deve risolversi prima della chiusura","un testimone inatteso cambia le regole del gioco","una bugia detta per salvarsi diventa un problema più grande","si scopre che quell'oggetto riguarda il protagonista più da vicino del previsto","un incontro casuale costringe a scegliere tra due strade","tutto sembra normale finché un dettaglio non torna indietro","una telefonata sbagliata complica ogni cosa"];
+const WK_F=["finale amaro: ottiene ciò che voleva, ma perde qualcosa","finale a sorpresa: il vero motivo di tutto emerge negli ultimi secondi","finale aperto: la scelta resta sospesa sull'ultima inquadratura","finale in cerchio: si torna all'inizio, ma niente è come prima","finale liberatorio: un gesto semplice scioglie la tensione"];
+const WK_V=["durata massima 2 minuti","durata massima 3 minuti","girato in una sola location","nessun dialogo per tutto il corto","un solo attore in scena","il titolo appare nella prima inquadratura","una sola battuta in tutto il corto","ripreso solo con il telefono","un colore dominante: il rosso","l'ultima inquadratura è identica alla prima","niente musica: il suono racconta tutto","montaggio con al massimo 10 tagli","girato in un solo pomeriggio","una sola fonte di luce per tutto il corto","tutto in bianco e nero tranne un oggetto a colori","nessun primo piano"];
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function pad2(n){return String(n).padStart(2,"0")}
+function lunedi(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
+function fmtData(d){return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate())}
+function fineSett(){const m=lunedi();return new Date(m.getFullYear(),m.getMonth(),m.getDate()+7).getTime()}
+function poolBase(k){const a=DEF[k]||[];return a.concat((BONUS[k]||[]).filter(function(x){return a.indexOf(x)<0}))}
+function settimana(){
+  const m=lunedi();const id=fmtData(m);
+  const r=mulberry(xmur3("W"+id)());
+  const sc=function(a){return a[Math.floor(r()*a.length)]};
+  let g=sc(poolBase("g"));const g2=sc(poolBase("g"));if(r()<.4&&g2!=g){g=g+" con venature di "+g2}
+  let l=sc(poolBase("l"));if(r()<.5){l=l+" "+sc(MOD_L)}
+  const o=sc(poolBase("o"));
+  return {id:id,g:g,l:l,o:o,P:sc(WK_P),C:sc(WK_C),F:sc(WK_F),V:sc(WK_V),da:m,a:new Date(m.getFullYear(),m.getMonth(),m.getDate()+6)};
+}
+function leggiWK(){try{return JSON.parse(localStorage.getItem("wk"))||{}}catch(e){return {}}}
+function scriviWK(o){try{localStorage.setItem("wk",JSON.stringify(o))}catch(e){}}
+function utenteW(){try{return localStorage.getItem("utente")||""}catch(e){return ""}}
+function creaSett(){const d=document.createElement("div");d.id="sett";document.body.appendChild(d);setInterval(tickSett,1000)}
+function renderSett(){
+  const e=document.getElementById("sett");if(!e)return;
+  const s=settimana();window._wkId=s.id;
+  const fm=function(d){return d.toLocaleDateString("it-IT",{day:"numeric",month:"long"})};
+  const wk=leggiWK()[s.id]||{};
+  let h='<div class="wk-head"><small>SFIDA DELLA SETTIMANA</small><div class="wk-date">'+fm(s.da)+" – "+fm(s.a)+'</div></div>';
+  h+='<div class="wk-timer"><small>SCADE TRA</small><div id="wkTimer"></div></div>';
+  h+='<div class="wk-card"><small>BOZZA DI SCENEGGIATURA</small><h3>«'+esc(cap(s.o))+'»</h3>';
+  h+='<p><b>Genere:</b> '+esc(s.g)+'</p>';
+  h+='<p><b>Atto 1</b> – '+esc(cap(s.P))+' arriva in '+esc(s.l)+' e nota '+esc(s.o)+'.</p>';
+  h+='<p><b>Atto 2</b> – '+esc(cap(s.C))+'.</p>';
+  h+='<p><b>Atto 3</b> – '+esc(cap(s.F))+'.</p></div>';
+  h+='<div class="wk-v"><small>VINCOLO DELLA SETTIMANA</small><b>'+esc(s.V)+'</b></div>';
+  h+='<div class="wk-card"><small>LA TUA CONSEGNA</small>';
+  h+='<input id="wkU" maxlength="30" placeholder="Il tuo nome utente" value="'+esc(utenteW())+'">';
+  h+='<input id="wkL" type="url" placeholder="Link del tuo video (https://...)" value="'+esc(wk.l||"")+'">';
+  h+='<button onclick="consegna()">'+(wk.l?"Aggiorna consegna":"Consegna il corto")+'</button>';
+  if(wk.l){h+='<a href="'+esc(wk.l)+'" target="_blank" rel="noopener">▶ Guarda il tuo corto</a><button class="s" onclick="condividiW()">📤 Condividi consegna</button>'}
+  h+='</div>';
+  e.innerHTML=h;
+  tickSett();
+}
+function tickSett(){
+  const el=document.getElementById("wkTimer");if(!el)return;
+  if(window._wkId&&window._wkId!=fmtData(lunedi())){renderSett();return}
+  const ms=Math.max(0,fineSett()-Date.now());
+  const g=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000),sec=Math.floor(ms%60000/1000);
+  el.innerHTML='<span>'+g+'<i>g</i></span><span>'+pad2(h)+'<i>h</i></span><span>'+pad2(m)+'<i>m</i></span><span>'+pad2(sec)+'<i>s</i></span>';
+  el.classList.toggle("urg",ms<86400000);
+}
+function consegna(){
+  const u=document.getElementById("wkU").value.replace(/[<>&"']/g," ").trim().slice(0,30);
+  let l=document.getElementById("wkL").value.trim();
+  if(!l){toast("Incolla il link del video");return}
+  if(!/^https?:\/\//i.test(l)){if(/^[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(l)){l="https://"+l}else{toast("Link non valido");return}}
+  try{localStorage.setItem("utente",u)}catch(e){}
+  const o=leggiWK();o[fmtData(lunedi())]={l:l,t:Date.now()};scriviWK(o);
+  toast("🏆 Consegna salvata");renderSett();
+}
+function condividiW(){
+  const s=settimana();const wk=leggiWK()[s.id]||{};
+  const fm=function(d){return d.toLocaleDateString("it-IT",{day:"numeric",month:"long"})};
+  const testo="🏆 Sfida della settimana ("+fm(s.da)+" – "+fm(s.a)+")\n"+(utenteW()||"Un regista")+" ha consegnato «"+cap(s.o)+"»\n▶ "+(wk.l||"")+"\nVincolo: "+s.V;
+  if(navigator.share){navigator.share({text:testo}).catch(function(){})}
+  else if(navigator.clipboard){navigator.clipboard.writeText(testo).then(function(){toast("Consegna copiata!")})}
+  else{prompt("Copia la consegna:",testo)}
 }
 function lock(k){bloc[k]=!bloc[k];disegna()}
 function disegna(){premessa();document.getElementById("rows").innerHTML=Object.keys(cur).map(function(k){return '<div class="r'+(bloc[k]?' locked':'')+'" onclick="lock(\''+k+'\')"><small>'+(NOMI[k]||k).toUpperCase()+'</small><span>'+cur[k]+'</span><i class="lk">'+(bloc[k]?'🔒':'🔓')+'</i></div>'}).join("")}
@@ -523,6 +614,7 @@ gen();
 mostra();
 popolaCat();
 bonus();popolaCat();
+creaSett();
 pagine();
 daLink();
 if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js")}
