@@ -1,4 +1,4 @@
-const C = "sfida-v4";
+const C = "sfida-202611101112";
 const F = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => {
   self.skipWaiting();
